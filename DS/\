@@ -1,0 +1,77 @@
+class Node:
+    def __init__(self, key):
+        self.key = key
+        self.height = 0
+        self.size = 1
+        self.left = None
+        self.right = None
+        
+class AVLTree:
+    def __init__(self):
+        self.root = None
+
+    def _height(self, node):
+        if node is None:
+            return -1
+        return node.height
+
+    def _updateheight(self, node):
+        node.height = 1 + max(_height(node.left),_height(node.right))
+
+    def _size(self, node):
+        if node is None:
+            return 0
+        return node.size
+
+    def _updatesize(self, node):
+        node.size = 1 + _size(node.left) + _size(node.right)
+
+    def _balancefactor(self, node):
+        if node is None:
+            return 0
+        return _height(node.right)-_height(node.left)
+
+    def insert(self, key):
+        self.root = self._insert(self.root, key)
+
+    def _insert(self, node, key):
+        if node is None:
+            return Node(key)
+        elif key < node.key:
+            node.left = self._insert(node.left, key)
+        elif key > node.key:
+            node.right = self._insert(node.right, key)
+        return self._balance(node)
+
+    def _rotateright(self, node):
+        x = node.left
+        y = node.right
+        x.right = node
+        node.left = y
+        _updateheight(node)
+        _updatesize(node)
+        _updateheight(x)
+        _updatesize(x)
+        return x
+
+    def _rotateleft(self, node):
+        x = node.right
+        y = node.left
+        x.left = node
+        node.right = y
+        _updateheight(node)
+        _updatesize(node)
+        _updateheight(x)
+        _updatesize(x)
+        return x
+
+
+    def _balance(self, node):
+        _updateheight(node)
+        _updatesize(node)
+        int balancefactor = _balancefactor(node)
+        if balance > 1:
+
+
+
+
