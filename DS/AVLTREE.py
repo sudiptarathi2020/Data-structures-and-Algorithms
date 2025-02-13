@@ -13,20 +13,37 @@ class AVLTree:
     def _height(self, node):
         return -1 if node is None else node.height
 
-    def _updateheight(self, node):
+    def _update_height(self, node):
         node.height = 1 + max(self._height(node.left), self._height(node.right))
 
     def _size(self, node):
         return 0 if node is None else node.size
 
-    def _updatesize(self, node):
+    def _update_size(self, node):
         node.size = 1 + self._size(node.left) + self._size(node.right)
 
-    def _balancefactor(self, node):
+    def _balance_factor(self, node):
         return 0 if node is None else self._height(node.right) - self._height(node.left)
 
     def insert(self, key):
         self.root = self._insert(self.root, key)
+
+    def delete(self, key):
+        self.root = self._remove(self.root, key)
+
+    def index(self, idx):
+        return self._index(self.root, idx)
+
+    def _index(self, node, idx):
+        if node is None:
+            return None
+        left_size = self._size(node.left)
+        if idx < left_size:
+            return self._index(node.left, idx)
+        elif idx == left_size:
+            return node.key
+        else:
+            return self._index(node.right, idx - left_size - 1)
 
     def _insert(self, node, key):
         if node is None:
@@ -37,38 +54,64 @@ class AVLTree:
             node.right = self._insert(node.right, key)
         return self._balance(node)
 
-    def _rotateright(self, node):
+    def _rotate_right(self, node):
         x = node.left
         node.left = x.right
         x.right = node
-        self._updateheight(node)
-        self._updatesize(node)
-        self._updateheight(x)
-        self._updatesize(x)
+        self._update_height(node)
+        self._update_size(node)
+        self._update_height(x)
+        self._update_size(x)
         return x
 
-    def _rotateleft(self, node):
+    def _rotate_left(self, node):
         x = node.right
         node.right = x.left
         x.left = node
-        self._updateheight(node)
-        self._updatesize(node)
-        self._updateheight(x)
-        self._updatesize(x)
+        self._update_height(node)
+        self._update_size(node)
+        self._update_height(x)
+        self._update_size(x)
         return x
 
     def _balance(self, node):
-        self._updateheight(node)
-        self._updatesize(node)
-        balancefactor = self._balancefactor(node)
-        if balancefactor > 1:
-            if self._balancefactor(node.right) < 0:
-                node.right = self._rotateright(node.right)
-            node = self._rotateleft(node)
-        elif balancefactor < -1:
-            if self._balancefactor(node.left) > 0:
-                node.left = self._rotateleft(node.left)
-            node = self._rotateright(node)
+        self._update_height(node)
+        self._update_size(node)
+        balance_factor = self._balance_factor(node)
+        if balance_factor > 1:
+            if self._balance_factor(node.right) < 0:
+                node.right = self._rotate_right(node.right)
+            node = self._rotate_left(node)
+        elif balance_factor < -1:
+            if self._balance_factor(node.left) > 0:
+                node.left = self._rotate_left(node.left)
+            node = self._rotate_right(node)
+        return node
+
+    def _most_left_child(self, node):
+        while node.left is not None:
+            node = node.left
+        return node
+
+    def _remove(self, node, key):
+        if node is None:
+            return None
+        elif key < node.key:
+            node.left = self._remove(node.left, key)
+        elif key > node.key:
+            node.right = self._remove(node.right, key)
+        else:
+            if node.left is None or node.right is None:
+                if node.left is None:
+                    node = node.right
+                else:
+                    node = node.left
+            else:
+                temp_node = self._most_left_child(node.right)
+                node.key = temp_node.key
+                node.right = self._remove(node.right, temp_node.key)
+        if node is not None:
+            node = self._balance(node)
         return node
 
     def search(self, key):
@@ -90,14 +133,19 @@ class AVLTree:
             result.append(node.key)
             self._inorder_traversal(node.right, result)
         return result
+
 if __name__ == "__main__":
-    avltree = AVLTree()
-    avltree.insert(10)
-    avltree.insert(40)
-    avltree.insert(100)
-    avltree.insert(5)
-    avltree.insert(21)
-    avltree.insert(14)
-    print("Inorder Traversal:", avltree.inorder_traversal())
-    print("Search 40: ", avltree.search(40) is not None)
-    print("Search 50: ", avltree.search(50) is not None)
+    avl_tree = AVLTree()
+    avl_tree.insert(10)
+    avl_tree.insert(40)
+    avl_tree.insert(100)
+    avl_tree.insert(5)
+    avl_tree.insert(21)
+    avl_tree.insert(14)
+    print("Inorder traversal:", avl_tree.inorder_traversal())
+    print("Search 40: ", avl_tree.search(40) is not None)
+    print("Search 50: ", avl_tree.search(50) is not None)
+    avl_tree.delete(14)
+    print("Inorder traversal after deletion:", avl_tree.inorder_traversal())
+    for i in range(10):
+        print(f'{i} is {avl_tree.index(i)}')
