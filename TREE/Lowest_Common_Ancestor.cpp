@@ -1,3 +1,5 @@
+#include<bits/stdc++.h>
+using namespace std;
 struct LCA{
     int n,l;
     vector<vector<int>>adj;
@@ -51,3 +53,6 @@ struct LCA{
         dfs(root,root);
     }
 };
+int main(){
+
+}

@@ -1,3 +1,5 @@
+#include<bits/stdc++.h>
+using namespace std;
 struct HLD{
     vector<vector<int>>adj;
     vector<int>tree;
@@ -125,3 +127,6 @@ struct HLD{
         return res+cur;
     }
 };
+int main(){
+
+}
